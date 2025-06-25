@@ -1,0 +1,31 @@
+name: 01 - Upload Artifact to Artifactory
+
+on:
+  workflow_run:
+    workflows: ["Build, Test and Package"]
+    types:
+      - completed
+
+jobs:
+  upload:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Restore build 
+        run: ./mvnw clean package -DskipTests
+
+      - name: Publish to Artifactory
+        run: ./mvnw deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
