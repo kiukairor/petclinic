@@ -1,10 +1,12 @@
-name: 01 - Upload Artifact to Artifactory
+name: Publish to Artifactory
 
 on:
   workflow_run:
     workflows: ["Build, Test and Package"]
     types:
       - completed
+permissions:
+  id-token: write
 
 jobs:
   upload:
@@ -24,8 +26,13 @@ jobs:
       - name: Restore build 
         run: ./mvnw clean package -DskipTests
 
-      - name: Publish to Artifactory
-        run: ./mvnw deploy -DskipTests
+      - name: publish to Artifactory
+        uses: jfrog/setup-jfrog-cli@v4
         env:
-          MAVEN_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+            JF_URL: https://trial3sr477.jfrog.io 
+        with:
+            oidc-provider-name: github-jfrog 
+            oidc-audience: my-aud
+
+
+        
