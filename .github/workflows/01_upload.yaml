@@ -17,39 +17,24 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-            name: app-artifact
-            path: target/
+          name: app-artifact  # Matches the uploaded name
+          path: artifact-dir/  # Different directory to avoid conflicts
 
-      - name: Set  Artifactory
+      - name: Verify artifact
+        run: |
+          echo "Downloaded files:"
+          ls -la artifact-dir/
+          echo "Unzipping..."
+          unzip artifact-dir/app-artifact.zip -d target/
+          ls -la target/
+
+      - name: Set up  Artifactory
         uses: jfrog/setup-jfrog-cli@v4
         env:
-            JF_URL: https://trial3sr477.jfrog.io
+          JF_URL: https://trial3sr477.jfrog.io
         with:
-            oidc-provider-name: github-jfrog
-            oidc-audience: my-aud
+          oidc-provider-name: github-jfrog
+          oidc-audience: my-aud
         
-      - name: Publish to Artifactory
-        run: jf rt upload --url="$JF_URL" "target/*.jar" "libs-snapshot-local/"
-      
-    #   - name: Checkout code
-    #     uses: actions/checkout@v4
-
-    #   - name: Set up JDK
-    #     uses: actions/setup-java@v4
-    #     with:
-    #       distribution: 'temurin'
-    #       java-version: '17'
-
-    #   - name: Restore build 
-    #     run: ./mvnw clean package -DskipTests
-
-    #   - name: publish to Artifactory
-    #     uses: jfrog/setup-jfrog-cli@v4
-    #     env:
-    #         JF_URL: https://trial3sr477.jfrog.io 
-    #     with:
-    #         oidc-provider-name: github-jfrog 
-    #         oidc-audience: my-aud
-
-
-        
+      - name: Upload to Artifactory  
+        run: jf rt upload --url="$JF_URL" "target/*.jar" "petclinic-libs-snapshot-local/"

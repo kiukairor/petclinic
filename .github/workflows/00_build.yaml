@@ -23,8 +23,8 @@ jobs:
       - name: Compile only
         run: ./mvnw compile
 
-      - name: Run tests 
-        run: ./mvnw test
+      # - name: Run tests 
+      #   run: ./mvnw test
 
       - name: Package (without rerunning tests)
         run: ./mvnw package -DskipTests

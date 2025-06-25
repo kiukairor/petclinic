@@ -448,7 +448,7 @@
     </profile>
   </profiles>
 
-<distributionManagement>
+<!-- <distributionManagement>
     <snapshotRepository>
         <id>snapshots</id>
         <name>a0pqu6a07ynmj-artifactory-primary-0-snapshots</name>
@@ -459,7 +459,7 @@
         <name>a0pqu6a07ynmj-artifactory-primary-0-releases</name>
         <url>https://trial3sr477.jfrog.io/artifactory/petclinic-libs-release-local</url>
     </repository>
-</distributionManagement>
+</distributionManagement> -->
 
 
 </project>
