@@ -14,19 +14,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact  # Matches the uploaded name
-          path: artifact-dir/  # Different directory to avoid conflicts
+      - uses: actions/checkout@v4
 
-      - name: Verify artifact
-        run: |
-          echo "Downloaded files:"
-          ls -la artifact-dir/
-          echo "Unzipping..."
-          unzip artifact-dir/app-artifact.zip -d target/
-          ls -la target/
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Clean project
+        run: ./mvnw clean
+
+      - name: Compile only
+        run: ./mvnw compile
+
+      # - name: Run tests 
+      #   run: ./mvnw test
+
+      - name: Package (without rerunning tests)
+        run: ./mvnw package -DskipTests
+    # steps:
+    #   - name: Download build artifact
+    #     uses: actions/download-artifact@v4
+    #     with:
+    #       name: app-artifact  # Matches the uploaded name
+    #       path: artifact-dir/  # Different directory to avoid conflicts
+
+    #   - name: Verify artifact
+    #     run: |
+    #       echo "Downloaded files:"
+    #       ls -la artifact-dir/
+    #       echo "Unzipping..."
+    #       unzip artifact-dir/app-artifact.zip -d target/
+    #       ls -la target/
 
       - name: Set up  Artifactory
         uses: jfrog/setup-jfrog-cli@v4
