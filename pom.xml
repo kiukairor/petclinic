@@ -447,4 +447,19 @@
       </build>
     </profile>
   </profiles>
+
+<distributionManagement>
+    <snapshotRepository>
+        <id>snapshots</id>
+        <name>a0pqu6a07ynmj-artifactory-primary-0-snapshots</name>
+        <url>https://trial3sr477.jfrog.io/artifactory/petclinic-libs-snapshot-local</url>
+    </snapshotRepository>
+    <repository>
+        <id>central</id>
+        <name>a0pqu6a07ynmj-artifactory-primary-0-releases</name>
+        <url>https://trial3sr477.jfrog.io/artifactory/petclinic-libs-release-local</url>
+    </repository>
+</distributionManagement>
+
+
 </project>
