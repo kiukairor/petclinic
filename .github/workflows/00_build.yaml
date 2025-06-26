@@ -17,6 +17,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          
       - name: Clean project
         run: ./mvnw clean
 
