@@ -1,60 +1,63 @@
-name: Publish to Artifactory
+# name: Publish to Artifactory
 
-on:
-  workflow_run:
-    workflows: ["Build, Test and Package"]
-    types:
-      - completed
-permissions:
-  id-token: write
+# on:
+#   workflow_run:
+#     workflows: ["Build, Test and Package"]
+#     types:
+#       - completed
+# permissions:
+#   id-token: write
 
-jobs:
-  upload:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
+# jobs:
+#   upload:
+#     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+#       - name: Set up JDK
+#         uses: actions/setup-java@v4
+#         with:
+#           distribution: 'temurin'
+#           java-version: '17'
 
-      - name: Clean project
-        run: ./mvnw clean
+#       - name: Clean project
+#         run: ./mvnw clean
 
-      - name: Compile only
-        run: ./mvnw compile
+#       - name: Compile only
+#         run: ./mvnw compile
 
-      # - name: Run tests 
-      #   run: ./mvnw test
+#       # - name: Run tests 
+#       #   run: ./mvnw test
 
-      - name: Package (without rerunning tests)
-        run: ./mvnw package -DskipTests
-    # steps:
-    #   - name: Download build artifact
-    #     uses: actions/download-artifact@v4
-    #     with:
-    #       name: app-artifact  # Matches the uploaded name
-    #       path: artifact-dir/  # Different directory to avoid conflicts
+#       - name: Package (without rerunning tests)
+#         run: ./mvnw package -DskipTests
+#     # steps:
+#     #   - name: Download build artifact
+#     #     uses: actions/download-artifact@v4
+#     #     with:
+#     #       name: app-artifact  # Matches the uploaded name
+#     #       path: artifact-dir/  # Different directory to avoid conflicts
 
-    #   - name: Verify artifact
-    #     run: |
-    #       echo "Downloaded files:"
-    #       ls -la artifact-dir/
-    #       echo "Unzipping..."
-    #       unzip artifact-dir/app-artifact.zip -d target/
-    #       ls -la target/
+#     #   - name: Verify artifact
+#     #     run: |
+#     #       echo "Downloaded files:"
+#     #       ls -la artifact-dir/
+#     #       echo "Unzipping..."
+#     #       unzip artifact-dir/app-artifact.zip -d target/
+#     #       ls -la target/
 
-      - name: Set up  Artifactory
-        uses: jfrog/setup-jfrog-cli@v4
-        env:
-          JF_URL: https://trial3sr477.jfrog.io
-        with:
-          oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+#       - name: Set up  Artifactory
+#         uses: jfrog/setup-jfrog-cli@v4
+#         env:
+#           JF_URL: https://trial3sr477.jfrog.io
+#         with:
+#           oidc-provider-name: github-jfrog
+#           oidc-audience: my-aud
         
-      - name: Upload to Artifactory  
-        run: jf rt upload --url="$JF_URL" "target/*.jar" "petclinic-libs-snapshot-local/"
+#       - name: Upload to Artifactory  
+#         run: jf rt upload --url="$JF_URL" "target/*.jar" "petclinic-libs-snapshot-local/"
+
+# YOU DONT NEED 2 FILES HERE, YOU NEED 2 JOBS in one file 
+# https://www.youtube.com/watch?v=UXMTOBkdvMY
