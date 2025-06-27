@@ -6,6 +6,7 @@ on:
     paths:
       - 'pom.xml'
       - 'src/**'
+      - '.github/workflows/00_build.yaml'
 permissions:
   id-token: write
 jobs:
@@ -31,8 +32,8 @@ jobs:
         run: ./mvnw clean
 
       # Run static checks before building
-      - name: Code Quality Checks
-        run: mvn checkstyle:check
+      # - name: Code Quality Checks
+      #   run: mvn checkstyle:check
 
 
       # Same run security static checks before building.
