@@ -21,13 +21,15 @@ jobs:
       - name: Set up jfrog cli
         uses: jfrog/setup-jfrog-cli@v4
         with:
-          version: 2.71.0
+          version: 2.75.0
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
         env:
           JF_URL: https://trial3sr477.jfrog.io #
 
-      - run: jf --version
+      - run: |
+          ls -al
+          jf scan .
                
   #     - name: Set up JDK
   #       uses: actions/setup-java@v4
