@@ -23,7 +23,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          
+
       - name: Clean project
         run: ./mvnw clean
 
@@ -50,9 +50,21 @@ jobs:
       - name: Download built artifact
         uses: actions/download-artifact@v4
         with:
-          name: app-artifact  # Matches the uploaded name
+          name: app-artifact
+          path: target/
           
 
       - name: Verify artifact
         run: |
           ls -la
+
+      - name: Set up Artifactory
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://trial3sr477.jfrog.io
+        with:
+          oidc-provider-name: github-jfrog
+          oidc-audience: my-aud
+        
+      - name: Upload to Artifactory  
+        run: jf rt upload --url="$JF_URL" "target/*.jar" "petclinic-libs-snapshot-local/"
