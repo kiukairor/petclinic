@@ -1,8 +1,11 @@
-name: Build and Publish
+name: Build and Publish Jar
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'pom.xml'
+      - 'src/**'
 permissions:
   id-token: write
 jobs:
@@ -18,7 +21,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
@@ -27,6 +29,22 @@ jobs:
 
       - name: Clean project
         run: ./mvnw clean
+
+      # Run static checks before building
+      - name: Code Quality Checks
+        run: mvn checkstyle:check
+
+
+      # Same run security static checks before building.
+      - name: Security Checks
+        run: echo "TODO, maybe jf xray??"
+      
+      - name: install jfrog-cli
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          version: latest
+          oidc-provider-name: github-jfrog
+          oidc-audience: my-aud
 
       - name: Compile only
         run: ./mvnw compile
@@ -62,7 +80,7 @@ jobs:
       - name: Set up Artifactory
         uses: jfrog/setup-jfrog-cli@v4
         env:
-          JF_URL: https://trial3sr477.jfrog.io
+          JF_URL: https://trial3sr477.jfrog.io #
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
