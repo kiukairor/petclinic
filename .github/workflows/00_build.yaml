@@ -13,6 +13,10 @@ permissions:
   security-events: write
 
 jobs:
+
+  
+  #     # - name: Code Quality Checks
+  #     #   run: mvn checkstyle:check
   static-security:
     runs-on: ubuntu-latest
     steps:
@@ -27,9 +31,7 @@ jobs:
         env:
           JF_URL: https://trial3sr477.jfrog.io #
 
-      - run: |
-          ls -al
-          jf scan .
+      - run: jf audit
                
   #     - name: Set up JDK
   #       uses: actions/setup-java@v4
