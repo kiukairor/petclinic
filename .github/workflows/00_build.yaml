@@ -33,6 +33,7 @@ jobs:
 
       - run: |
           jf audit > scan.log
+          cat scan.log
           # Extract and sum all the reported vuln counts; Assumes the log file states "Found X vulnerabilities" for each type of vuln."
           total=$(grep -Eo 'Found [0-9]+ (IaC|secrets|SAST|applicable cves)' scan.log | awk '{sum+=$2} END {print sum}')
           echo "Total vulnerabilities found: $total"
