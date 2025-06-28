@@ -35,16 +35,13 @@ jobs:
           # jf audit --format json > results.json 2>/dev/null
           # echo "|> Counting vulnerabilities before building... "
           jf audit  --format table --min-severity Medium > table.txt 2>/dev/null
-          # cat table.txt
           vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)
+          again==$(grep -E 'High|Critical' table.txt | tr -d ' ' | wc -l)
           echo "$vuln High vuln found"
-          vuln=$(cat table.txt | grep -E 'High|Medium' | tr -d ' ' |wc -l)
-          echo "$vuln Medium vuln found"
           if [ "$vuln" -gt 1 ]; then
-            echo "Too many High/Critical vulnerabilities found: $vuln"
+            echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
+            echo "Aborting build workflow..."
             exit 1
-          # else
-          #   echo "Not too many vuln found - Continuing. "
           fi
           echo '...End <|'
 
