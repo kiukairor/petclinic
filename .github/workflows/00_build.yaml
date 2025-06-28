@@ -33,18 +33,16 @@ jobs:
 
       - run: |
           # jf audit --format json > results.json 2>/dev/null
-          # echo "=========================="
-          # a="bonjour"
-          # echo $a
-          # ls -al
-          # res=$(jq '[.[0].vulnerabilities[] | select(.severity == "High" or .severity == "Critical")] | length' results.json)
-          # echo "$res vulnerabilities > High found"
-          echo "=================================================================================="
+          # echo "|> Counting vulnerabilities before building... "
           jf audit > table.txt 2>/dev/null
-          cat table.txt
-          cat table.txt | grep -E 'High|Medium' | tr -d ' '
-          cat table.txt | grep -E 'High|Medium' | tr -d ' ' |wc -l
-          echo "=================================================================================="
+          vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)
+          if $vuln -gt 0; then
+            echo "High or Critical vulnerabilities found: $vuln"
+            exit 1
+          else
+            echo "No High or Critical vulnerabilities found."
+          fi
+          
 
                
   #     - name: Set up JDK
