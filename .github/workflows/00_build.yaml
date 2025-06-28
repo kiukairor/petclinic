@@ -37,6 +37,7 @@ jobs:
           a="bonjour"
           echo $a
           ls -al
+          cat results.json
           echo "=========================="
 
                
