@@ -32,12 +32,12 @@ jobs:
           JF_URL: https://trial3sr477.jfrog.io #
 
       - run: |
-          jf audit 2>&1 scan.log
-          echo "=========================="
-          cat scan.log
+          jf audit --format json > results.json 2>/dev/null
           echo "=========================="
           a="bonjour"
           echo $a
+          ls -al
+          echo "=========================="
 
                
   #     - name: Set up JDK
