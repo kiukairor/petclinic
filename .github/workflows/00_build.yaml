@@ -34,8 +34,12 @@ jobs:
       - run: |
           # jf audit --format json > results.json 2>/dev/null
           # echo "|> Counting vulnerabilities before building... "
-          jf audit > table.txt 2>/dev/null
+          jf audit  --format table --min-severity Medium > table.txt 2>/dev/null
+          cat table.txt
           vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)
+          echo "$vuln High vuln found"
+          vuln=$(cat table.txt | grep -E 'High|Medium' | tr -d ' ' |wc -l)
+          echo "$vuln Medium vuln found"
           if $vuln -gt 0; then
             echo "High or Critical vulnerabilities found: $vuln"
             exit 1
