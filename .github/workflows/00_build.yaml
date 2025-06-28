@@ -43,8 +43,8 @@ jobs:
           if [ "$vuln" -gt 10 ]; then
             echo "Too many High/Critical vulnerabilities found: $vuln"
             exit 1
-          else
-            echo "Not too many vuln found - Continuing. "
+          # else
+          #   echo "Not too many vuln found - Continuing. "
           fi
           echo '...End <|'
 
