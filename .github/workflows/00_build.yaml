@@ -40,7 +40,7 @@ jobs:
           echo "$vuln High vuln found"
           vuln=$(cat table.txt | grep -E 'High|Medium' | tr -d ' ' |wc -l)
           echo "$vuln Medium vuln found"
-          if [ "$vuln" -gt 10 ]; then
+          if [ "$vuln" -gt 1 ]; then
             echo "Too many High/Critical vulnerabilities found: $vuln"
             exit 1
           # else
