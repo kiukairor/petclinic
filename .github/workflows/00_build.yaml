@@ -38,7 +38,7 @@ jobs:
           echo $a
           ls -al
           res=$(jq '[.[0].vulnerabilities[] | select(.severity == "High" or .severity == "Critical")] | length' results.json)
-          echo $res vulnerabilities > High found
+          echo "$res vulnerabilities > High found"
           echo "=========================="
 
                
