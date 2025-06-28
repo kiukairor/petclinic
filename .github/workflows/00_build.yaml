@@ -39,7 +39,10 @@ jobs:
           ls -al
           res=$(jq '[.[0].vulnerabilities[] | select(.severity == "High" or .severity == "Critical")] | length' results.json)
           echo "$res vulnerabilities > High found"
-          echo "=========================="
+          echo "=================================================================================="
+          jf audit > table.txt 2>/dev/null
+          cat table.txt | grep -E 'High|Medium' | tr -d ' ' |wc -l
+          echo "=================================================================================="
 
                
   #     - name: Set up JDK
