@@ -32,15 +32,17 @@ jobs:
           JF_URL: https://trial3sr477.jfrog.io #
 
       - run: |
-          jf audit --format json > results.json 2>/dev/null
-          echo "=========================="
-          a="bonjour"
-          echo $a
-          ls -al
-          res=$(jq '[.[0].vulnerabilities[] | select(.severity == "High" or .severity == "Critical")] | length' results.json)
-          echo "$res vulnerabilities > High found"
+          # jf audit --format json > results.json 2>/dev/null
+          # echo "=========================="
+          # a="bonjour"
+          # echo $a
+          # ls -al
+          # res=$(jq '[.[0].vulnerabilities[] | select(.severity == "High" or .severity == "Critical")] | length' results.json)
+          # echo "$res vulnerabilities > High found"
           echo "=================================================================================="
           jf audit > table.txt 2>/dev/null
+          cat table.txt
+          cat table.txt | grep -E 'High|Medium' | tr -d ' '
           cat table.txt | grep -E 'High|Medium' | tr -d ' ' |wc -l
           echo "=================================================================================="
 
