@@ -38,6 +38,7 @@ jobs:
           vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)
           again==$(grep -E 'High|Critical' table.txt | tr -d ' ' | wc -l)
           echo "$vuln High vuln found"
+          echo "$again High vuln GREPEPED"
           if [ "$vuln" -gt 1 ]; then
             echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
             echo "Aborting build workflow..."
