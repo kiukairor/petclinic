@@ -43,10 +43,10 @@ jobs:
           if [ "$vuln" -gt 10 ];; then
             echo "Too many High/Critical vulnerabilities found: $vuln"
             exit 1
-          else
-            echo "No High or Critical vulnerabilities found."
-          fi
-          
+          # else
+          #   echo "No High or Critical vulnerabilities found."
+          # fi
+          echo '...End <|'
 
                
   #     - name: Set up JDK
