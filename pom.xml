@@ -331,13 +331,13 @@
 <repositories >
   <repository>
     <id>artifactory-snapshots</id>
-    <url>https://trial3sr4770.jfrog.io/artifactory/fffffffffffffffff-libs-snapshot</url>
+    <url>https://trial3sr477.jfrog.io/artifactory/fffffffffffffffff-libs-snapshot</url>
     <snapshots><enabled>true</enabled></snapshots>
     <releases><enabled>false</enabled></releases>
   </repository>
   <repository>
     <id>artifactory-releases</id>
-    <url>https://trial3sr4770.jfrog.io/artifactory/fffffffffffffffff-libs-release</url>
+    <url>https://trial3sr477.jfrog.io/artifactory/fffffffffffffffff-libs-release</url>
     <snapshots><enabled>false</enabled></snapshots>
     <releases><enabled>true</enabled></releases>
   </repository>
@@ -345,7 +345,7 @@
     <id>central</id>
     <url>https://repo.maven.apache.org/maven2</url>
     <releases>
-            <enabled>false</enabled>
+            <enabled>true</enabled>
     </releases>
     <snapshots>
         <enabled>false</enabled>
