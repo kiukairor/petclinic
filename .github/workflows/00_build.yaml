@@ -76,14 +76,18 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
+      - name: Generate settings.xml dynamically
+        run: |
+          mkdir -p ~/.m2
+          envsubst < .github/param-settings.xml > ~/.m2/settings.xml
+        env:
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+
       # Run static checks before building
       - name: Clean project
-        # run: ./mvnw clean
-        run: |
-          JFROG_CLI_PLUGINS_REPO=https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release
-          JFROG_CLI_RELEASES_REPO=https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release
-          JFROG_CLI_BUILD_URL=https://trial3sr477.jfrog.io
-          jf mvn clean 
+        run: ./mvnw clean
 
       # Commenting as too many errors...
       # - name: Code Quality Checks
