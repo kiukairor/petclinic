@@ -21,7 +21,9 @@ permissions:
 
 jobs:
   download-from-artifactory:
-    if: github.event.workflow_run.conclusion == 'success' 
+    # kjkj
+    #  if: github.event.workflow_run.conclusion == 'success' 
+    # klzjkjfd
     runs-on: ubuntu-latest
 
     steps:
