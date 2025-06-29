@@ -26,14 +26,14 @@ jobs:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
         env:
-          JF_URL: https://trial3sr477.jfrog.io #
+          JF_URL: https://trial3sr477.jfrog.io
 
       - run: |
-          # jf audit --format json > results.json 2>/dev/null
-          # echo "|> Counting vulnerabilities before building... "
+          echo "|> Counting vulnerabilities before building... "
           jf audit  --format table --min-severity Medium > table.txt 2>/dev/null
           vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)
-                    
+          cat table.txt
+          echo "Found $vuln High/Critical vulnerabilities"
           if [ "$vuln" -gt 10 ]; then
             echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
             echo "Aborting build workflow..."
@@ -96,7 +96,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
-          path: target/*.jar
+          path: target/
       
       - name: check files
         run: |
