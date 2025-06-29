@@ -36,12 +36,16 @@ jobs:
       - name: Download JAR from Artifactory
         run: |
           jf rt dl my-repo-libs-snapshot/target/spring-petclinic-3.5.0-SNAPSHOT.jar
+          ls -al
+          ls -al target/
 
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: build docker image
         run: |
+          ls -al
+          ls -al target/
           docker build -t trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }} .
 
 
