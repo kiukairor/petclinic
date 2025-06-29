@@ -1,7 +1,7 @@
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY target/ui.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar", "--server.address=0.0.0.0"]
+COPY target/spring-petclinic-3.5.0-SNAPSHOT.jar petclinic.jar
+ENTRYPOINT ["java", "-jar", "petclinic.jar", "--server.address=0.0.0.0"]
 
 
 # # The petclinic project uses Spring Boot's layered JAR feature,
