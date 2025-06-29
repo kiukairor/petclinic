@@ -14,7 +14,7 @@ on:
     paths: 
       - 'Dockerfile'
       - 'docker-compose.yaml'
-      - '.github/workflows/01_container_image.yaml'
+      - '.github/workflows/01_download_containerize.yaml'
 
 permissions:
   id-token: write
