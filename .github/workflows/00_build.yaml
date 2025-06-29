@@ -79,7 +79,10 @@ jobs:
       # Run static checks before building
       - name: Clean project
         # run: ./mvnw clean
-        run: jf rt mvn clean --url=https://trial3sr477.jfrog.io --repo=my-repo-libs-snapshot-local
+        run: |
+          JFROG_CLI_PLUGINS_REPO=https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release
+          JFROG_CLI_RELEASES_REPO=https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release
+          jf rt mvn clean 
 
       # Commenting as too many errors...
       # - name: Code Quality Checks
