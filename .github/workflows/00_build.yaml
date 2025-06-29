@@ -27,18 +27,13 @@ jobs:
             oidc-provider-name: github-jfrog 
             oidc-audience: my-aud
       
-      # - name: prep settings.xml
+      # - name: Generate settings.xml dynamically
       #   run: |
-      #     pwd
       #     mkdir -p ~/.m2
-      #     mv cleanersettings.xml ~/.m2/settings.xml
-      - name: Generate settings.xml dynamically
-        run: |
-          mkdir -p ~/.m2
-          envsubst < .github/param-settings.xml > ~/.m2/settings.xml
-        env:
-          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      #     envsubst < .github/param-settings.xml > ~/.m2/settings.xml
+      #   env:
+      #     ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+      #     ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - run: |
           echo "|> Counting vulnerabilities before building... "
