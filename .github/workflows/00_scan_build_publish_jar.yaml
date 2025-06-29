@@ -36,7 +36,16 @@ jobs:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - run: |
+      # Non-blocking.
+      - name: Code Quality Checks 1
+        run: ./mvnw checkstyle:checkstyle
+
+      - name: Code Quality checks 2
+        run: ./mvnw spotbugs:check
+
+
+      - name: security checks
+        run: |
           echo "|> Counting vulnerabilities before building... "
           jf audit  --format table --min-severity Medium > table.txt 
           vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
@@ -82,12 +91,12 @@ jobs:
       - name: Clean project
         run: ./mvnw clean
 
-      # Non-blocking.
-      - name: Code Quality Checks 1
-        run: ./mvnw checkstyle:checkstyle
+      # # Non-blocking.
+      # - name: Code Quality Checks 1
+      #   run: ./mvnw checkstyle:checkstyle
 
-      - name: Code Quality checks 2
-        run: ./mvnw spotbugs:check
+      # - name: Code Quality checks 2
+      #   run: ./mvnw spotbugs:check
 
       - name: Verify (build, test, package, integration tests)
         run: ./mvnw verify
