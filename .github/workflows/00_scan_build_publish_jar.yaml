@@ -6,7 +6,7 @@ on:
     paths:
       - 'pom.xml'
       - 'src/**'
-      - '.github/workflows/00_build.yaml'
+      - '.github/workflows/00_scan_build_publish_jar.yaml'
 permissions:
   id-token: write
   contents: read
