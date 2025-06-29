@@ -84,11 +84,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
+          path: target/*.jar
       
+      - name: check files
+        run: |
+          echo "Checking files in target directory..."
+          ls -l
+          ls -l target/
+          if [ ! -f target/*.jar ]; then
+            echo "No JAR file found in target directory. Aborting publish step."
+            exit 1
+          fi    
       - name: install jfrog-cli
         uses: jfrog/setup-jfrog-cli@v4
         with:
-          version: latest
+          version: 2.75.0
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
 
