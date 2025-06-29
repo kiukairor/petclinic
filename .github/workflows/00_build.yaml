@@ -82,7 +82,8 @@ jobs:
         run: |
           JFROG_CLI_PLUGINS_REPO=https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release
           JFROG_CLI_RELEASES_REPO=https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release
-          jf rt mvn clean 
+          JFROG_CLI_BUILD_URL=https://trial3sr477.jfrog.io
+          jf mvn clean 
 
       # Commenting as too many errors...
       # - name: Code Quality Checks
