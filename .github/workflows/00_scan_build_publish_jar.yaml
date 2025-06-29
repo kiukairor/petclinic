@@ -172,7 +172,7 @@ jobs:
           jf rt build-add-git    
 
       - name: Upload to Artifactory  
-        run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/"
+        run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/" --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
 
       - name: Publish build info
         run: |
