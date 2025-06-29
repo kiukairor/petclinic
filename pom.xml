@@ -352,7 +352,6 @@
         <enabled>true</enabled>
     </snapshots>
   </repository>    
-
 </repositories>
 
 <pluginRepositories >
@@ -374,6 +373,40 @@
     </pluginRepository>
 </pluginRepositories> -->
 
+
+<repositories>
+  <repository>
+    <id>central</id>
+    <name>my-repo-libs-release</name>
+    <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+  <repository>
+    <id>snapshots</id>
+    <name>my-repo-libs-snapshot</name>
+    <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-snapshot</url>
+    <snapshots />
+  </repository>
+</repositories>
+
+<pluginRepositories>
+  <pluginRepository>
+    <id>central</id>
+    <name>my-repo-libs-release</name>
+    <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </pluginRepository>
+  <pluginRepository>
+    <id>snapshots</id>
+    <name>my-repo-libs-snapshot</name>
+    <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-snapshot</url>
+    <snapshots />
+  </pluginRepository>
+</pluginRepositories>
 
   <profiles>
     <profile>
