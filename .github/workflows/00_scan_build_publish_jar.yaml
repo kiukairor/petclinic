@@ -7,61 +7,75 @@ on:
       - 'pom.xml'
       - 'src/**'
       - '.github/workflows/00_scan_build_publish_jar.yaml'
+
 permissions:
   id-token: write
   contents: read
   security-events: write
 
-jobs:
+env:
+  BUILD_NAME: ${{ github.workflow }} 
+  BUILD_NUMBER: ${{ github.run_number }}  
 
-  static-security:
+jobs:
+  dummy-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up jf cli (xray scans)
-        uses: jfrog/setup-jfrog-cli@v4
-        env:
-            JF_URL: https://trial3sr477.jfrog.io 
-        with:
-            oidc-provider-name: github-jfrog 
-            oidc-audience: my-aud
-            version: 2.75.0
-      
-      - name: Generate settings.xml dynamically
+      - name: Dummy check
         run: |
-          mkdir -p ~/.m2
-          envsubst < .github/param-settings.xml > ~/.m2/settings.xml
-        env:
-          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          echo "This is a dummy job to ensure the workflow runs on push events."
+          echo $BUILD_NAME
+          echo $BUILD_NUMBER
+  # static-security:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+      
+  #     - name: Set up jf cli (xray scans)
+  #       uses: jfrog/setup-jfrog-cli@v4
+  #       env:
+  #           JF_URL: https://trial3sr477.jfrog.io 
+  #       with:
+  #           oidc-provider-name: github-jfrog 
+  #           oidc-audience: my-aud
+  #           version: 2.75.0
+      
+  #     - name: Generate settings.xml dynamically
+  #       run: |
+  #         mkdir -p ~/.m2
+  #         envsubst < .github/param-settings.xml > ~/.m2/settings.xml
+  #       env:
+  #         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+  #         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      # Non-blocking.
-      - name: Code Quality Checks 1
-        run: ./mvnw checkstyle:checkstyle
+      # Non-blocking. Commented out as too slow for tests
+      # - name: Code Quality Checks 1
+      #   run: ./mvnw checkstyle:checkstyle
 
-      - name: Code Quality checks 2
-        run: ./mvnw spotbugs:check
+      # - name: Code Quality checks 2
+      #   run: ./mvnw spotbugs:check
 
 
-      - name: security checks
-        run: |
-          echo "|> Counting vulnerabilities before building... "
-          jf audit  --format table --min-severity Medium > table.txt 
-          vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
+      # Blocking if too many High vulnerabilities
+      ##==========>> Watches are may be meant to do this but nee to check further
+      # - name: security checks
+      #   run: |
+      #     echo "|> Counting vulnerabilities before building... "
+      #     jf audit  --format table --min-severity Medium > table.txt 
+      #     vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
 
-          if [ "$vuln" -gt 10 ]; then
-            echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
-            echo "Aborting build workflow..."
-            exit 1
-          fi
-          echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with build."               
+      #     if [ "$vuln" -gt 10 ]; then
+      #       echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
+      #       echo "Aborting build workflow..."
+      #       exit 1
+      #     fi
+      #     echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with build."               
 
 
 ####################################################################
 
   maven-build: 
-    needs: static-security
+    # needs: static-security
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,13 +104,6 @@ jobs:
       # Run static checks before building
       - name: Clean project
         run: ./mvnw clean
-
-      # # Non-blocking.
-      # - name: Code Quality Checks 1
-      #   run: ./mvnw checkstyle:checkstyle
-
-      # - name: Code Quality checks 2
-      #   run: ./mvnw spotbugs:check
 
       - name: Verify (build, test, package, integration tests)
         run: ./mvnw verify
@@ -166,3 +173,8 @@ jobs:
 
       - name: Upload to Artifactory  
         run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/"
+
+      - name: Publish build info
+        run: |
+          jf rt build-publish "$BUILD_NAME" 
+          jf bs "$BUILD_NAME" "$BUILD_NUMBER"
