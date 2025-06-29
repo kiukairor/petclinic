@@ -328,9 +328,10 @@
     </pluginRepository>
   </pluginRepositories> -->
 
-<repositories >
+<!-- <repositories >
   <repository>
     <id>artifactory-snapshots</id>
+    https://trial3sr477.jfrog.io/artifactory/petclinic-libs-snapshot-local
     <url>https://trial3sr477.jfrog.io/artifactory/fffffffffffffffff-libs-snapshot</url>
     <snapshots><enabled>true</enabled></snapshots>
     <releases><enabled>false</enabled></releases>
@@ -348,7 +349,7 @@
             <enabled>true</enabled>
     </releases>
     <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
     </snapshots>
   </repository>    
 
@@ -371,7 +372,7 @@
             <enabled>false</enabled>
         </snapshots>
     </pluginRepository>
-</pluginRepositories>
+</pluginRepositories> -->
 
 
   <profiles>
