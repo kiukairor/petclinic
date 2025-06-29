@@ -32,20 +32,23 @@ jobs:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
           version: 2.75.0
+  
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Download JAR from Artifactory
         run: |
           jf rt dl my-repo-libs-snapshot/target/spring-petclinic-3.5.0-SNAPSHOT.jar
           ls -al
           ls -al target/
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+          echo "End Checking if JAR file was downloaded and where..."
+          pwd
       - name: build docker image
         run: |
           ls -al
           ls -al target/
+          echo "Checking if JAR is sitll here ..."
+          pwd
           docker build -t trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }} .
 
 
