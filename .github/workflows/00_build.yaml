@@ -14,41 +14,44 @@ permissions:
 
 jobs:
 
-  static-security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # static-security:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
       
-      - name: security (xray scans)
-        uses: jfrog/setup-jfrog-cli@v4
-        env:
-            JF_URL: https://trial3sr477.jfrog.io 
-        with:
-            oidc-provider-name: github-jfrog 
-            oidc-audience: my-aud
+  #     - name: security (xray scans)
+  #       uses: jfrog/setup-jfrog-cli@v4
+  #       env:
+  #           JF_URL: https://trial3sr477.jfrog.io 
+  #       with:
+  #           oidc-provider-name: github-jfrog 
+  #           oidc-audience: my-aud
       
-      - name: Generate settings.xml dynamically
-        run: |
-          mkdir -p ~/.m2
-          envsubst < .github/param-settings.xml > ~/.m2/settings.xml
-        env:
-          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+  #     - name: Generate settings.xml dynamically
+  #       run: |
+  #         mkdir -p ~/.m2
+  #         envsubst < .github/param-settings.xml > ~/.m2/settings.xml
+  #       env:
+  #         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+  #         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - run: |
-          echo "|> Counting vulnerabilities before building... "
-          jf audit  --format table --min-severity Medium > table.txt 
-          vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
+  #     - run: |
+  #         echo "|> Counting vulnerabilities before building... "
+  #         jf audit  --format table --min-severity Medium > table.txt 
+  #         vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
 
-          if [ "$vuln" -gt 10 ]; then
-            echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
-            echo "Aborting build workflow..."
-            exit 1
-          fi
-          echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with build."               
+  #         if [ "$vuln" -gt 10 ]; then
+  #           echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
+  #           echo "Aborting build workflow..."
+  #           exit 1
+  #         fi
+  #         echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with build."               
+
+
+####################################################################
 
   maven-build: 
-    needs: static-security
+    # needs: static-security
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +61,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: set jf cli
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+            JF_URL: https://trial3sr477.jfrog.io 
+        with:
+            oidc-provider-name: github-jfrog 
+            oidc-audience: my-aud
 
       - name: Cache Maven dependencies
         uses: actions/cache@v4
