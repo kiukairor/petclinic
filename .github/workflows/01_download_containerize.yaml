@@ -54,8 +54,8 @@ jobs:
       - name: Upload docker image to Artifactory
         run: |
           jf docker push trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }}
-          jf rt docker-push --url="$JF_URL" "trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }}" "my-docker-repo-docker/"
-        
+          jf rt build-add-git
+          jf rt build-collect-env
 # https://www.youtube.com/watch?v=UXMTOBkdvMY
 
 # name: Build and Tag Docker Image
