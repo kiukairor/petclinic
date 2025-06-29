@@ -35,7 +35,7 @@ jobs:
       - name: Generate settings.xml dynamically
         run: |
           mkdir -p ~/.m2
-          envsubst < .github/settings-template.xml > ~/.m2/settings.xml
+          envsubst < .github/param-settings.xml > ~/.m2/settings.xml
         env:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
