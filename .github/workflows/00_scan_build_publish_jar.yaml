@@ -151,14 +151,14 @@ jobs:
       #       echo "No JAR file found in target directory. Aborting publish step."
       #       exit 1
       #     fi    
-      - name: Set up jf cli
-        uses: jfrog/setup-jfrog-cli@v4
-        with:
-          version: 2.75.0
-          oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+      # - name: Set up jf cli
+      #   uses: jfrog/setup-jfrog-cli@v4
+      #   with:
+      #     version: 2.75.0
+      #     oidc-provider-name: github-jfrog
+      #     oidc-audience: my-aud
 
-      - name: publish to JFrog Artifactory
+      - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://trial3sr477.jfrog.io
