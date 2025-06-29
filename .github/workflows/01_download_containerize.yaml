@@ -43,7 +43,7 @@ jobs:
           ls -al target/
           echo "End Checking if JAR file was downloaded and where..."
           pwd
-      - name: build docker image
+      - name: Build docker image
         run: |
           ls -al
           ls -al target/
@@ -51,7 +51,11 @@ jobs:
           pwd
           docker build -t trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }} .
 
-
+      - name: Upload docker image to Artifactory
+        run: |
+          jf docker push trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }}
+          jf rt docker-push --url="$JF_URL" "trial3sr477.jfrog.io/my-docker-repo-docker/jfrog-docker-example-image:${{ github.run_number }}" "my-docker-repo-docker/"
+        
 # https://www.youtube.com/watch?v=UXMTOBkdvMY
 
 # name: Build and Tag Docker Image
