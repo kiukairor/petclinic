@@ -70,6 +70,18 @@ jobs:
       - name: Verify (build, test, package, integration tests)
         run: ./mvnw verify
 
+      - name: Check Jar creation  
+        run: |
+          echo "Checking if JAR file was created..."
+          ls -l target/
+          ls -l
+          if [ ! -f target/*.jar ]; then
+            echo "No JAR file found in target directory. Aborting build step."
+            exit 1
+          else
+            echo "JAR file found in target directory."
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
