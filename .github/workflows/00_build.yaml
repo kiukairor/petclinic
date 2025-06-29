@@ -29,7 +29,8 @@ jobs:
       
       - name: prep settings.xml
         run: |
-          ls -l
+          pwd
+          mkdir -p ~/.m2
           mv cleanersettings.xml ~/.m2/settings.xml
       - run: |
           echo "|> Counting vulnerabilities before building... "
