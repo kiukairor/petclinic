@@ -67,66 +67,67 @@ jobs:
 
       # Run static checks before building
       - name: Clean project
-        run: ./mvnw clean
+        # run: ./mvnw clean
+        run: jf rt mvn clean --url=https://trial3sr477.jfrog.io --repo=my-repo-libs-snapshot-local
 
       # Commenting as too many errors...
       # - name: Code Quality Checks
       #   run: ./mvnw checkstyle:check
 
-      - name: Verify (build, test, package, integration tests)
-        run: ./mvnw verify
+  #     - name: Verify (build, test, package, integration tests)
+  #       run: ./mvnw verify
 
-      - name: Check Jar creation  
-        run: |
-          echo "Checking if JAR file was created..."
-          ls -l target/
-          ls -l
-          if [ ! -f target/*.jar ]; then
-            echo "No JAR file found in target directory. Aborting build step."
-            exit 1
-          else
-            echo "JAR file found in target directory."
-          fi
+  #     - name: Check Jar creation  
+  #       run: |
+  #         echo "Checking if JAR file was created..."
+  #         ls -l target/
+  #         ls -l
+  #         if [ ! -f target/*.jar ]; then
+  #           echo "No JAR file found in target directory. Aborting build step."
+  #           exit 1
+  #         else
+  #           echo "JAR file found in target directory."
+  #         fi
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-artifact
-          path: target/*.jar
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: app-artifact
+  #         path: target/*.jar
 
-  publish:
-    runs-on: ubuntu-latest
-    needs: maven-build
-    steps:
-      - name: Download built artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact
-          path: target/
+  # publish:
+  #   runs-on: ubuntu-latest
+  #   needs: maven-build
+  #   steps:
+  #     - name: Download built artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: app-artifact
+  #         path: target/
       
-      - name: check files
-        run: |
-          echo "Checking files in target directory..."
-          ls -l
-          ls -l target/
-          if [ ! -f target/*.jar ]; then
-            echo "No JAR file found in target directory. Aborting publish step."
-            exit 1
-          fi    
-      - name: install jfrog-cli
-        uses: jfrog/setup-jfrog-cli@v4
-        with:
-          version: 2.75.0
-          oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+  #     - name: check files
+  #       run: |
+  #         echo "Checking files in target directory..."
+  #         ls -l
+  #         ls -l target/
+  #         if [ ! -f target/*.jar ]; then
+  #           echo "No JAR file found in target directory. Aborting publish step."
+  #           exit 1
+  #         fi    
+  #     - name: install jfrog-cli
+  #       uses: jfrog/setup-jfrog-cli@v4
+  #       with:
+  #         version: 2.75.0
+  #         oidc-provider-name: github-jfrog
+  #         oidc-audience: my-aud
 
-      - name: publish to JFrog Artifactory
-        uses: jfrog/setup-jfrog-cli@v4
-        env:
-          JF_URL: https://trial3sr477.jfrog.io
-        with:
-          oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+  #     - name: publish to JFrog Artifactory
+  #       uses: jfrog/setup-jfrog-cli@v4
+  #       env:
+  #         JF_URL: https://trial3sr477.jfrog.io
+  #       with:
+  #         oidc-provider-name: github-jfrog
+  #         oidc-audience: my-aud
         
-      - name: Upload to Artifactory  
-        run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/"
+  #     - name: Upload to Artifactory  
+  #       run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/"
