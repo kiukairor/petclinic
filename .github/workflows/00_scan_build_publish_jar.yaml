@@ -165,16 +165,37 @@ jobs:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
       
-      - name: Collect environment details
-        run: jf rt build-collect-env
-
-      - name: Add Git info to build
-        run: jf rt build-add-git    
+      - name: Collect environment and git info
+        run: |
+          jf rt build-collect-env
+          jf rt build-add-git    
 
       - name: Upload to Artifactory  
         run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/"
 
       - name: Publish build info
         run: |
-          jf rt build-publish "$BUILD_NAME" 
+          jf rt build-publish 
           jf bs "$BUILD_NAME" "$BUILD_NUMBER"
+
+
+# EXAMPLE on jfrog github.
+#     - if: always()
+#       name: Build & Deploy
+#       run: | 
+#         cd maths && jf mvn clean install
+        
+#     - if: always() 
+#       name: Publish Build Information
+#       run: |
+#         # Collect environment variables for the build
+#         jf rt bce
+#         # Collect VCS details from git and add them to the build
+#         jf rt bag
+#         # Publish build info
+#         jf rt bp       
+        
+#     - if: always()
+#       name: Xray Scan
+#       run: |
+#         jf bs
