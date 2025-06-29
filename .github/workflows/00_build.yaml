@@ -27,9 +27,10 @@ jobs:
             oidc-provider-name: github-jfrog 
             oidc-audience: my-aud
       
-      - name: test jfrog-cli depdendency
+      - name: prep settings.xml
         run: |
-          jf mvn dependency:tree
+          ls -l
+          mv cleanersettings.xml ~/.m2/settings.xml
       - run: |
           echo "|> Counting vulnerabilities before building... "
           jf audit  --format table --min-severity Medium > table.txt 
