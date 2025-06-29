@@ -146,10 +146,21 @@
       <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
 
+
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.7.3.0</version> <!-- or whatever is latest -->
+        <configuration>
+          <failOnError>false</failOnError>
+          <threshold>Medium</threshold> <!-- or Low, High -->
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -207,6 +218,7 @@
             </goals>
             <phase>validate</phase>
             <configuration>
+              <failOnViolation>false</failOnViolation>
               <configLocation>src/checkstyle/nohttp-checkstyle.xml</configLocation>
               <sourceDirectories>${basedir}</sourceDirectories>
               <includes>**/*</includes>

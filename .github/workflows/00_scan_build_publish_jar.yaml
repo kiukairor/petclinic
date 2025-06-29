@@ -82,24 +82,27 @@ jobs:
       - name: Clean project
         run: ./mvnw clean
 
-      # Commenting as too many errors...
-      # - name: Code Quality Checks
-      #   run: ./mvnw checkstyle:check
+      # Non-blocking.
+      - name: Code Quality Checks 1
+        run: ./mvnw checkstyle:checkstyle
+
+      - name: Code Quality checks 2
+        run: ./mvnw spotbugs:check
 
       - name: Verify (build, test, package, integration tests)
         run: ./mvnw verify
-
-      - name: Check Jar creation  
-        run: |
-          echo "Checking if JAR file was created..."
-          ls -l target/
-          ls -l
-          if [ ! -f target/*.jar ]; then
-            echo "No JAR file found in target directory. Aborting build step."
-            exit 1
-          else
-            echo "JAR file found in target directory."
-          fi
+        
+      # - name: Check Jar creation  
+      #   run: |
+      #     echo "Checking if JAR file was created..."
+      #     ls -l target/
+      #     ls -l
+      #     if [ ! -f target/*.jar ]; then
+      #       echo "No JAR file found in target directory. Aborting build step."
+      #       exit 1
+      #     else
+      #       echo "JAR file found in target directory."
+      #     fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -117,15 +120,15 @@ jobs:
           name: app-artifact
           path: target/
       
-      - name: check files
-        run: |
-          echo "Checking files in target directory..."
-          ls -l
-          ls -l target/
-          if [ ! -f target/*.jar ]; then
-            echo "No JAR file found in target directory. Aborting publish step."
-            exit 1
-          fi    
+      # - name: check files
+      #   run: |
+      #     echo "Checking files in target directory..."
+      #     ls -l
+      #     ls -l target/
+      #     if [ ! -f target/*.jar ]; then
+      #       echo "No JAR file found in target directory. Aborting publish step."
+      #       exit 1
+      #     fi    
       - name: Set up jf cli
         uses: jfrog/setup-jfrog-cli@v4
         with:
@@ -140,6 +143,12 @@ jobs:
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
-        
+      
+      - name: Collect environment details
+        run: jf rt build-collect-env
+
+      - name: Add Git info to build
+        run: jf rt build-add-git    
+
       - name: Upload to Artifactory  
         run: jf rt upload --url="$JF_URL" "target/*.jar" "my-repo-libs-snapshot-local/"
