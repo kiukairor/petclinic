@@ -110,16 +110,21 @@ jobs:
           name: app-artifact
           path: target/*.jar
 
-  publish:
-    runs-on: ubuntu-latest
-    needs: maven-build
-    steps:
-      - name: Download built artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact
-          path: target/
-      
+# I merged step build and publish to benefit the git commit and build number in the JFrog Artifactory.
+  # publish:
+  #   runs-on: ubuntu-latest
+    # needs: maven-build
+    # steps:
+    #   - name: Download built artifact
+    #     uses: actions/download-artifact@v4
+    #     with:
+    #       name: app-artifact
+    #       path: target/
+
+    
+
+
+
       # - name: check files
       #   run: |
       #     echo "Checking files in target directory..."
