@@ -40,13 +40,6 @@
   </properties>
 
   <dependencies>
-
-    <!-- Vulnerable dependency -->
-    <dependency>
-    <groupId>commons-collections</groupId>
-    <artifactId>commons-collections</artifactId>
-    <version>3.2.1</version>
-    </dependency>
     <!-- Spring and Spring Boot dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -298,7 +291,7 @@
     </license>
   </licenses>
 
-  <repositories>
+  <!-- <repositories>
     <repository>
       <snapshots>
         <enabled>true</enabled>
@@ -333,7 +326,53 @@
       <name>Spring Milestones</name>
       <url>https://repo.spring.io/milestone</url>
     </pluginRepository>
-  </pluginRepositories>
+  </pluginRepositories> -->
+
+<repositories >
+  <repository>
+    <id>artifactory-snapshots</id>
+    <url>https://trial3sr4770.jfrog.io/artifactory/fffffffffffffffff-libs-snapshot</url>
+    <snapshots><enabled>true</enabled></snapshots>
+    <releases><enabled>false</enabled></releases>
+  </repository>
+  <repository>
+    <id>artifactory-releases</id>
+    <url>https://trial3sr4770.jfrog.io/artifactory/fffffffffffffffff-libs-release</url>
+    <snapshots><enabled>false</enabled></snapshots>
+    <releases><enabled>true</enabled></releases>
+  </repository>
+  <repository>
+    <id>central</id>
+    <url>https://repo.maven.apache.org/maven2</url>
+    <releases>
+            <enabled>false</enabled>
+    </releases>
+    <snapshots>
+        <enabled>false</enabled>
+    </snapshots>
+  </repository>    
+
+</repositories>
+
+<pluginRepositories >
+  <pluginRepository>
+    <id>artifactory-plugins</id>
+    <url>https://trial3sr477.jfrog.io/artifactory/fffffffffffffffff-plugins</url>
+    <snapshots><enabled>true</enabled></snapshots>
+    <releases><enabled>true</enabled></releases>
+   </pluginRepository>
+      <pluginRepository>
+        <id>central</id>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </pluginRepository>
+</pluginRepositories>
+
 
   <profiles>
     <profile>
