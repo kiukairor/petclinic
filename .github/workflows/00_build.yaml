@@ -95,7 +95,7 @@ jobs:
       - name: publish to JFrog Artifactory
         uses: jfrog/setup-jfrog-cli@v4
         env:
-          JF_URL: https://trial3sr477.jfrog.io #
+          JF_URL: https://trial3sr477.jfrog.io
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
