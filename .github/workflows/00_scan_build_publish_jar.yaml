@@ -24,6 +24,7 @@ jobs:
       - name: Dummy check
         run: |
           echo "This is a dummy job to ensure the workflow runs on push events."
+          echo "can i go for a shower if it fails now"
           echo $BUILD_NAME
           echo $BUILD_NUMBER
   # static-security:
