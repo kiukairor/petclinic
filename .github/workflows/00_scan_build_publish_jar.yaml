@@ -18,65 +18,58 @@ env:
   BUILD_NUMBER: ${{ github.run_number }}  
 
 jobs:
-  dummy-check:
+  quality-security-gates:
     runs-on: ubuntu-latest
     steps:
-      - name: Dummy check
+      - uses: actions/checkout@v4
+      
+      - name: Set up jf cli (xray scans)
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+            JF_URL: https://trial3sr477.jfrog.io 
+        with:
+            oidc-provider-name: github-jfrog 
+            oidc-audience: my-aud
+            version: 2.75.0
+      
+      # I failed to leverage jf CLI to use 'jf mvn' here, as I needed to provide some config and I was not sure how to do it in an automated and elegant way.
+      ## Should be studied further to assess if there is a more elegant way to run run maven commands.     
+      - name: Generate settings.xml dynamically
         run: |
-          echo "This is a dummy job to ensure the workflow runs on push events."
-          echo "can i go for a shower if it fails now"
-          echo $BUILD_NAME
-          echo $BUILD_NUMBER
-  # static-security:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+          mkdir -p ~/.m2
+          envsubst < .github/param-settings.xml > ~/.m2/settings.xml
+        env:
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      # Non-blocking quality checks.
+      ## checkstyle is about code quality.
+      ## checkstyle:check could make it blocking.
+      - name: Code Quality Checks 1
+        run: ./mvnw checkstyle:checkstyle
+      ## Spotbugs is a static code analysis tool that looks for bugs in Java programs.
+      - name: Code Quality checks 2
+        run: ./mvnw spotbugs:check
+
+      # Security Checks -- Failing if too many High vulnerabilities
+      ## Note that jfrog watches can do similar things with better control but need the artifacts to be uploaded. If failing defined policies, these artifacts can then be quarantined (See Next step of the workflow).
+      ## Here the idea is to avoid building the jar if we detect too many vulnerabilities right away.
       
-  #     - name: Set up jf cli (xray scans)
-  #       uses: jfrog/setup-jfrog-cli@v4
-  #       env:
-  #           JF_URL: https://trial3sr477.jfrog.io 
-  #       with:
-  #           oidc-provider-name: github-jfrog 
-  #           oidc-audience: my-aud
-  #           version: 2.75.0
-      
-  #     - name: Generate settings.xml dynamically
-  #       run: |
-  #         mkdir -p ~/.m2
-  #         envsubst < .github/param-settings.xml > ~/.m2/settings.xml
-  #       env:
-  #         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-  #         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      - name: Initial security checks
+        run: |
+          echo "|> Counting vulnerabilities before building and abort if too many... "
+          jf audit  --format table --min-severity Medium > table.txt 
+          vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
 
-      # Non-blocking. Commented out as too slow for tests
-      # - name: Code Quality Checks 1
-      #   run: ./mvnw checkstyle:checkstyle
+          if [ "$vuln" -gt 10 ]; then
+            echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
+            echo "Aborting build workflow..."
+            exit 1
+          fi
+          echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with maven build."               
 
-      # - name: Code Quality checks 2
-      #   run: ./mvnw spotbugs:check
-
-
-      # Blocking if too many High vulnerabilities
-      ##==========>> Watches are may be meant to do this but nee to check further
-      # - name: security checks
-      #   run: |
-      #     echo "|> Counting vulnerabilities before building... "
-      #     jf audit  --format table --min-severity Medium > table.txt 
-      #     vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
-
-      #     if [ "$vuln" -gt 10 ]; then
-      #       echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
-      #       echo "Aborting build workflow..."
-      #       exit 1
-      #     fi
-      #     echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with build."               
-
-
-####################################################################
-
-  maven-build: 
-    # needs: static-security
+  maven-build-publish: 
+    needs: quality-security-gates
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,6 +86,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
+      # Same reason as previous step.
       - name: Generate settings.xml dynamically
         run: |
           mkdir -p ~/.m2
@@ -101,12 +95,13 @@ jobs:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-
-      # Run static checks before building
+      
       - name: Clean project
         run: ./mvnw clean
 
-      - name: Verify (build, test, package, integration tests)
+      # More quality checks are includeded here. 
+      # As part of maven lifecycle, more checks will be run up to verify (unit test, integarion tests, and some jacoco tests as defined in pom.xml).
+      - name: Verify (validate, compile, test, package, verify)
         run: ./mvnw verify
         
       # - name: Check Jar creation  
@@ -177,26 +172,29 @@ jobs:
       - name: Publish build info
         run: |
           jf rt build-publish 
-          jf bs "$BUILD_NAME" "$BUILD_NUMBER"
+          jf bs --format table  --vuln true "$BUILD_NAME" "$BUILD_NUMBER"
 
 
-# EXAMPLE on jfrog github.
-#     - if: always()
-#       name: Build & Deploy
-#       run: | 
-#         cd maths && jf mvn clean install
-        
-#     - if: always() 
-#       name: Publish Build Information
-#       run: |
-#         # Collect environment variables for the build
-#         jf rt bce
-#         # Collect VCS details from git and add them to the build
-#         jf rt bag
-#         # Publish build info
-#         jf rt bp       
-        
-#     - if: always()
-#       name: Xray Scan
-#       run: |
-#         jf bs
+## static quality and security inital tests passed.
+## Unit tests and integration tests succeeded, as part of maven verify phase passed.
+## Jfrog XRay scan passed on Artifactory.
+# One could promote the jar.
+
+# In a real life scenario, we would not want to promote a SNAPSHOT version of the jar, we would leverage branching and taggging strategies to ensure that we only promote stable versions of the jar.
+# However for the sake of this demo, we will use jf cli to promote this very jar to a dev repository (even if the jar will still embed the SNAPSHOT version).
+  promote:
+    needs: maven-build-publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://trial3sr477.jfrog.io
+        with:
+          oidc-provider-name: github-jfrog
+          oidc-audience: my-aud
+          version: 2.75.0
+
+      - name: Promote the jar to dev repository
+        run: |
+          jf rt promote --url="$JF_URL" "my-repo-libs-snapshot-local/spring-petclinic-3.5.0-SNAPSHOT.jar" "my-repo-libs-dev-local/" --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"

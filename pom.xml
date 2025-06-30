@@ -270,6 +270,27 @@
             </goals>
             <phase>prepare-package</phase>
           </execution>
+          <execution>
+            <id>check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>verify</phase>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element> 
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.8</minimum> <!-- should pass -->
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
@@ -396,6 +417,14 @@
     </snapshots>
   </repository>
   <repository>
+    <id>dev</id>
+    <name>my-repo-libs-release</name>
+    <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-dev-virtual</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+  <repository>
     <id>snapshots</id>
     <name>my-repo-libs-snapshot</name>
     <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-snapshot</url>
@@ -408,6 +437,14 @@
     <id>central</id>
     <name>my-repo-libs-release</name>
     <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-release</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </pluginRepository>
+  <pluginRepository>
+    <id>dev</id>
+    <name>my-repo-libs-release</name>
+    <url>https://trial3sr477.jfrog.io/artifactory/my-repo-libs-dev-virtual</url>
     <snapshots>
       <enabled>false</enabled>
     </snapshots>
