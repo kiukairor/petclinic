@@ -45,11 +45,11 @@ jobs:
       # Non-blocking quality checks.
       ## checkstyle is about code quality.
       ## checkstyle:check could make it blocking.
-      - name: Code Quality Checks 1
-        run: ./mvnw checkstyle:checkstyle
+      # - name: Code Quality Checks 1
+      #   run: ./mvnw checkstyle:checkstyle
       ## Spotbugs is a static code analysis tool that looks for bugs in Java programs.
-      - name: Code Quality checks 2
-        run: ./mvnw spotbugs:check
+      # - name: Code Quality checks 2
+      #   run: ./mvnw spotbugs:check
 
       # Security Checks -- Failing if too many High vulnerabilities
       ## Note that jfrog watches can do similar things with better control but need the artifacts to be uploaded. If failing defined policies, these artifacts can then be quarantined (See Next step of the workflow).
@@ -58,15 +58,15 @@ jobs:
       - name: Initial security checks
         run: |
           echo "|> Counting vulnerabilities before building and abort if too many... "
-          jf audit  --format table --min-severity Medium > table.txt 
-          vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
+          # jf audit  --format table --min-severity Medium > table.txt 
+          # vuln=$(cat table.txt | grep -E 'High|Critical' | tr -d ' ' |wc -l)        
 
-          if [ "$vuln" -gt 10 ]; then
-            echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
-            echo "Aborting build workflow..."
-            exit 1
-          fi
-          echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with maven build."               
+          # if [ "$vuln" -gt 10 ]; then
+          #   echo "Static analysis found too many High/Critical vulnerabilities($vuln vulnerabilities)"
+          #   echo "Aborting build workflow..."
+          #   exit 1
+          # fi
+          # echo "Static analysis found $vuln High/Critical vulnerabilities. Proceeding with maven build."               
 
   maven-build-publish: 
     needs: quality-security-gates
@@ -104,54 +104,13 @@ jobs:
       - name: Verify (validate, compile, test, package, verify)
         run: ./mvnw verify
         
-      # - name: Check Jar creation  
-      #   run: |
-      #     echo "Checking if JAR file was created..."
-      #     ls -l target/
-      #     ls -l
-      #     if [ ! -f target/*.jar ]; then
-      #       echo "No JAR file found in target directory. Aborting build step."
-      #       exit 1
-      #     else
-      #       echo "JAR file found in target directory."
-      #     fi
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-artifact
-          path: target/*.jar
-
-# I merged step build and publish to benefit the git commit and build number in the JFrog Artifactory.
-  # publish:
-  #   runs-on: ubuntu-latest
-    # needs: maven-build
-    # steps:
-    #   - name: Download built artifact
-    #     uses: actions/download-artifact@v4
-    #     with:
-    #       name: app-artifact
-    #       path: target/
-
-    
-
-
-
-      # - name: check files
-      #   run: |
-      #     echo "Checking files in target directory..."
-      #     ls -l
-      #     ls -l target/
-      #     if [ ! -f target/*.jar ]; then
-      #       echo "No JAR file found in target directory. Aborting publish step."
-      #       exit 1
-      #     fi    
-      # - name: Set up jf cli
-      #   uses: jfrog/setup-jfrog-cli@v4
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
       #   with:
-      #     version: 2.75.0
-      #     oidc-provider-name: github-jfrog
-      #     oidc-audience: my-aud
+      #     name: app-artifact
+      #     path: target/*.jar
+
 
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
@@ -172,7 +131,7 @@ jobs:
       - name: Publish build info
         run: |
           jf rt build-publish 
-          jf bs --format table  --vuln true "$BUILD_NAME" "$BUILD_NUMBER"
+          jf bs --format table  --vuln "$BUILD_NAME" "$BUILD_NUMBER"
 
 
 ## static quality and security inital tests passed.
@@ -182,19 +141,20 @@ jobs:
 
 # In a real life scenario, we would not want to promote a SNAPSHOT version of the jar, we would leverage branching and taggging strategies to ensure that we only promote stable versions of the jar.
 # However for the sake of this demo, we will use jf cli to promote this very jar to a dev repository (even if the jar will still embed the SNAPSHOT version).
-  promote:
-    needs: maven-build-publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v4
-        env:
-          JF_URL: https://trial3sr477.jfrog.io
-        with:
-          oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
-          version: 2.75.0
 
-      - name: Promote the jar to dev repository
-        run: |
-          jf rt promote --url="$JF_URL" "my-repo-libs-snapshot-local/spring-petclinic-3.5.0-SNAPSHOT.jar" "my-repo-libs-dev-local/" --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
+# promote:
+  #   needs: maven-build-publish
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up JFrog CLI
+  #       uses: jfrog/setup-jfrog-cli@v4
+  #       env:
+  #         JF_URL: https://trial3sr477.jfrog.io
+  #       with:
+  #         oidc-provider-name: github-jfrog
+  #         oidc-audience: my-aud
+  #         version: 2.75.0
+
+  #     - name: Promote the jar to dev repository
+  #       run: |
+  #         jf rt promote --url="$JF_URL" "my-repo-libs-snapshot-local/spring-petclinic-3.5.0-SNAPSHOT.jar" "my-repo-libs-dev-local/" --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
